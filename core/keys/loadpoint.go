@@ -59,12 +59,9 @@ const (
 	RemoteDisabledSource = "remoteDisabledSource" // remote disabled source
 
 	// vehicle
-	VehicleTitle           = "vehicleTitle"           // vehicle title
 	VehicleName            = "vehicleName"            // vehicle name
 	VehicleIdentity        = "vehicleIdentity"        // vehicle identity
-	VehicleCapacity        = "vehicleCapacity"        // vehicle battery capacity
 	VehicleDetectionActive = "vehicleDetectionActive" // vehicle detection active
-	VehicleIcon            = "vehicleIcon"            // vehicle icon for ui
 	VehicleOdometer        = "vehicleOdometer"        // vehicle odometer
 	VehiclePresent         = "vehiclePresent"         // vehicle detected
 	VehicleRange           = "vehicleRange"           // vehicle range
