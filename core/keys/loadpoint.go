@@ -53,6 +53,7 @@ const (
 	PlanSoc            = "planSoc"            // charge plan soc goal
 	PlanActive         = "planActive"         // charge plan has determined current slot to be an active slot
 	PlanProjectedStart = "planProjectedStart" // charge plan start time (earliest slot)
+	PlanOverrun        = "planOverrun"        // charge plan goal not reachable in time
 
 	// remote control
 	RemoteDisabled       = "remoteDisabled"       // remote disabled
@@ -66,7 +67,6 @@ const (
 	VehicleDetectionActive = "vehicleDetectionActive" // vehicle detection active
 	VehicleIcon            = "vehicleIcon"            // vehicle icon for ui
 	VehicleOdometer        = "vehicleOdometer"        // vehicle odometer
-	VehiclePresent         = "vehiclePresent"         // vehicle detected
 	VehicleRange           = "vehicleRange"           // vehicle range
 	VehicleSoc             = "vehicleSoc"             // vehicle soc
 	VehicleTargetSoc       = "vehicleTargetSoc"       // vehicle soc limit

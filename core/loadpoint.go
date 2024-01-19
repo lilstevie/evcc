@@ -260,9 +260,6 @@ func NewLoadpointFromConfig(log *util.Logger, settings *Settings, other map[stri
 		lp.mode = api.ModeOff
 	}
 
-	// restore settings
-	lp.restoreSettings()
-
 	return lp, nil
 }
 
@@ -300,20 +297,20 @@ func NewLoadpoint(log *util.Logger, settings *Settings) *Loadpoint {
 
 // restoreSettings restores loadpoint settings
 func (lp *Loadpoint) restoreSettings() {
-	if v, err := lp.settings.String(keys.Mode); err == nil {
-		lp.mode = api.ChargeMode(v)
+	if v, err := lp.settings.String(keys.Mode); err == nil && v != "" {
+		lp.setMode(api.ChargeMode(v))
 	}
-	if v, err := lp.settings.Time(keys.PlanTime); err == nil {
-		lp.planTime = v
+	if v, err := lp.settings.Int(keys.LimitSoc); err == nil && v > 0 {
+		lp.setLimitSoc(int(v))
 	}
-	if v, err := lp.settings.Float(keys.PlanEnergy); err == nil {
-		lp.planEnergy = v
+	if v, err := lp.settings.Float(keys.LimitEnergy); err == nil && v > 0 {
+		lp.setLimitEnergy(v)
 	}
-	if v, err := lp.settings.Int(keys.LimitSoc); err == nil {
-		lp.limitSoc = int(v)
-	}
-	if v, err := lp.settings.Float(keys.LimitEnergy); err == nil {
-		lp.limitEnergy = v
+
+	t, err1 := lp.settings.Time(keys.PlanTime)
+	v, err2 := lp.settings.Float(keys.PlanEnergy)
+	if err1 == nil && err2 == nil {
+		lp.setPlanEnergy(t, v)
 	}
 }
 
@@ -389,16 +386,7 @@ func (lp *Loadpoint) publish(key string, val interface{}) {
 		return
 	}
 
-	p := util.Param{Key: key, Val: val}
-
-	// https://github.com/evcc-io/evcc/issues/11191 prevent deadlock
-	select {
-	case lp.uiChan <- p:
-	default:
-		go func() {
-			lp.uiChan <- p
-		}()
-	}
+	lp.uiChan <- util.Param{Key: key, Val: val}
 }
 
 // evChargeStartHandler sends external start event
@@ -570,6 +558,9 @@ func (lp *Loadpoint) Prepare(uiChan chan<- util.Param, pushChan chan<- push.Even
 	_ = lp.bus.Subscribe(evChargeCurrent, lp.evChargeCurrentHandler)
 	_ = lp.bus.Subscribe(evVehicleSoc, lp.evVehicleSocProgressHandler)
 
+	// restore settings
+	lp.restoreSettings()
+
 	// publish initial values
 	lp.publish(keys.Title, lp.Title())
 	lp.publish(keys.Mode, lp.GetMode())
@@ -600,8 +591,6 @@ func (lp *Loadpoint) Prepare(uiChan chan<- util.Param, pushChan chan<- push.Even
 	}
 
 	// vehicle
-	lp.publish(keys.VehiclePresent, false)
-	lp.publish(keys.VehicleTitle, "")
 	lp.publish(keys.VehicleIcon, "")
 	lp.publish(keys.VehicleName, "")
 	lp.publish(keys.VehicleCapacity, 0.0)
