@@ -59,7 +59,7 @@
 				type="range"
 				min="0"
 				max="100"
-				step="5"
+				:step="step"
 				:value="visibleLimitSoc"
 				class="slider"
 				:class="{ 'slider--active': sliderActive }"
@@ -81,11 +81,11 @@ export default {
 	name: "VehicleSoc",
 	props: {
 		connected: Boolean,
-		vehiclePresent: Boolean,
 		vehicleSoc: Number,
 		vehicleTargetSoc: Number,
 		enabled: Boolean,
 		charging: Boolean,
+		heating: Boolean,
 		minSoc: Number,
 		effectivePlanSoc: Number,
 		effectiveLimitSoc: Number,
@@ -106,6 +106,9 @@ export default {
 		};
 	},
 	computed: {
+		step: function () {
+			return this.heating ? 1 : 5;
+		},
 		vehicleSocDisplayWidth: function () {
 			if (this.socBasedCharging) {
 				if (this.vehicleSoc >= 0) {
