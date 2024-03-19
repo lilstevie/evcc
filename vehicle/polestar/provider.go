@@ -9,6 +9,8 @@ import (
 	"github.com/evcc-io/evcc/util"
 )
 
+// https://github.com/TA2k/ioBroker.polestar
+
 type Provider struct {
 	statusG func() (BatteryData, error)
 	odoG    func() (OdometerData, error)
